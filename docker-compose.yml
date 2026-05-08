@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Backend Laravel (App)
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: feeder_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=feeder_db
+      - DB_USERNAME=sail
+      - DB_PASSWORD=password
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/var/www/html
+
+  # Database
+  db:
+    image: mysql:8.0
+    container_name: feeder_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: feeder_db
+      MYSQL_USER: sail
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Frontend React (Vite Dev Server)
+  frontend:
+    image: node:18-alpine
+    container_name: feeder_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+
+volumes:
+  db_data:
