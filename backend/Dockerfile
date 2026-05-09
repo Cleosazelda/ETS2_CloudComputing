@@ -1,5 +1,5 @@
 # Menggunakan image PHP 8.2 dengan FPM
-FROM php:8.2-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # Install dependensi sistem yang dibutuhkan untuk Laravel dan ekstensi PHP
 RUN apk add --no-cache \
@@ -25,7 +25,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Install dependensi Composer untuk production
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # Set permission storage dan cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
