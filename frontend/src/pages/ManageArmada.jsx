@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getCdnUrl } from '../utils/cdn';
 
 const ManageArmada = () => {
   const [armadas, setArmadas] = useState([]);
@@ -141,7 +142,7 @@ const ManageArmada = () => {
                 <tr key={armada.id}>
                   <td>
                     {armada.armada_image_url ? (
-                      <img src={armada.armada_image_url} alt={armada.nama_armada} style={{ width: '80px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                      <img src={getCdnUrl(armada.armada_image_url)} alt={armada.nama_armada} style={{ width: '80px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
                     ) : (
                       <span style={{ color: 'var(--text-secondary)' }}>Tidak ada foto</span>
                     )}

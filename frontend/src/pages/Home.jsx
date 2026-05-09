@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getCdnUrl } from '../utils/cdn';
 
 const Home = () => {
   const [rutes, setRutes] = useState([]);
   const [jadwals, setJadwals] = useState([]);
+  const [laporans, setLaporans] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // State for Laporan Form
@@ -22,12 +24,14 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ruteRes, jadwalRes] = await Promise.all([
+        const [ruteRes, jadwalRes, laporanRes] = await Promise.all([
           axios.get(`${apiUrl}/rutes`),
-          axios.get(`${apiUrl}/jadwals`)
+          axios.get(`${apiUrl}/jadwals`),
+          axios.get(`${apiUrl}/laporans`)
         ]);
         setRutes(ruteRes.data);
         setJadwals(jadwalRes.data);
+        setLaporans(laporanRes.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -151,7 +155,7 @@ const Home = () => {
             return (
               <div key={rute.id} className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
                 {rute.map_image_url ? (
-                  <img src={rute.map_image_url} alt={rute.nama_rute} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
+                  <img src={getCdnUrl(rute.map_image_url)} alt={rute.nama_rute} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
                 ) : (
                   <div style={{ width: '100%', height: '160px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{ color: 'var(--text-secondary)' }}>Tidak ada peta rute</span>
@@ -180,6 +184,45 @@ const Home = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Laporan Warga Section */}
+      <h2 style={{ textAlign: 'center', marginTop: '4rem', marginBottom: '2rem' }}>Laporan Warga Terkini</h2>
+      {loading ? (
+        <p style={{ textAlign: 'center' }}>Memuat data laporan...</p>
+      ) : laporans.length === 0 ? (
+        <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Belum ada laporan dari warga.</p>
+      ) : (
+        <div className="dashboard-grid">
+          {laporans.map(laporan => (
+            <div key={laporan.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>{laporan.nama_pelapor}</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{new Date(laporan.created_at).toLocaleString('id-ID')}</p>
+                </div>
+                <span className={`badge ${laporan.status === 'Selesai' ? 'success' : laporan.status === 'Diproses' ? 'warning' : 'danger'}`}>
+                  {laporan.status}
+                </span>
+              </div>
+              
+              <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <p style={{ fontSize: '0.9rem' }}><strong>Lokasi:</strong> {laporan.lokasi}</p>
+                <p style={{ fontSize: '0.9rem' }}><strong>Insiden:</strong> {laporan.jenis_insiden}</p>
+              </div>
+              
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)' }}>"{laporan.deskripsi}"</p>
+              
+              {laporan.foto_url && (
+                <img 
+                  src={getCdnUrl(laporan.foto_url)} 
+                  alt="Bukti Laporan" 
+                  style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginTop: 'auto' }} 
+                />
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

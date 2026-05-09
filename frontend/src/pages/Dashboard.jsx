@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getCdnUrl } from '../utils/cdn';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({ rute: 0, armada: 0, jadwal: 0 });
@@ -87,7 +88,7 @@ const Dashboard = () => {
               <div key={armada.id} className="list-item">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   {armada.armada_image_url ? (
-                    <img src={armada.armada_image_url} alt={armada.nama_armada} style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                    <img src={getCdnUrl(armada.armada_image_url)} alt={armada.nama_armada} style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
                   ) : (
                     <div style={{ width: '60px', height: '40px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px' }}></div>
                   )}

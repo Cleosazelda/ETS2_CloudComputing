@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getCdnUrl } from '../utils/cdn';
 
 const ManageRute = () => {
   const [rutes, setRutes] = useState([]);
@@ -120,7 +121,7 @@ const ManageRute = () => {
                 <tr key={rute.id}>
                   <td>
                     {rute.map_image_url ? (
-                      <a href={rute.map_image_url} target="_blank" rel="noreferrer" style={{ color: '#60a5fa' }}>Lihat Peta</a>
+                      <img src={getCdnUrl(rute.map_image_url)} alt={rute.nama_rute} style={{ width: '80px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
                     ) : (
                       <span style={{ color: 'var(--text-secondary)' }}>-</span>
                     )}
